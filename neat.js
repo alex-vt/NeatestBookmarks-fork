@@ -283,6 +283,7 @@ function init() {
 			var vPattern = new RegExp('^' + value.escapeRegExp().replace(/\s+/g, '.*'), 'ig');
 			if (results.length > 1){
 				results.sort(function(a, b){
+					if (!localStorage.searchResultsSortByTime) {
 					var aTitle = a.title;
 					var bTitle = b.title;
 					var aIndexTitle = aTitle.toLowerCase().indexOf(v);
@@ -296,6 +297,7 @@ function init() {
 					var bTestTitle = vPattern.test(bTitle);
 					if (aTestTitle && !bTestTitle) return -1;
 					if (!aTestTitle && bTestTitle) return 1;
+					}
 					return b.dateAdded - a.dateAdded;
 				});
 				results = results.slice(0, 100); // 100 is enough

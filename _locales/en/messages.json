@@ -277,5 +277,8 @@
   },
   "url": {
     "message": "URL"
+  },
+  "optionSortByDate": {
+    "message": "Sort search results by modification time (newest first)."
   }
 }

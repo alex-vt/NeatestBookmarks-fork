@@ -12,6 +12,7 @@ function init() {
 	$('optionPopupStays').innerHTML = chrome.i18n.getMessage('optionPopupStays');
 	$('optionConfirmOpenFolder').innerHTML = chrome.i18n.getMessage('optionConfirmOpenFolder');
 	$('optionRememberPrevState').innerHTML = chrome.i18n.getMessage('optionRememberPrevState');
+	$('optionSortByDate').innerHTML = chrome.i18n.getMessage('optionSortByDate');
 	$('accessibility').innerHTML = chrome.i18n.getMessage('accessibility');
 	$('optionZoom').innerHTML = chrome.i18n.getMessage('optionZoom');
 	$('customIcon').innerHTML = chrome.i18n.getMessage('customIcon');
@@ -84,6 +85,12 @@ document.addEventListener('DOMContentLoaded', function(){
 	rememberPrevState.checked = !localStorage.dontRememberState;
 	rememberPrevState.addEventListener('change', function(){
 		localStorage.dontRememberState = rememberPrevState.checked ? '' : '1';
+	});
+	
+	var searchSortByTime = $('search-sort-by-time');
+	searchSortByTime.checked = !!localStorage.searchResultsSortByTime;
+	searchSortByTime.addEventListener('change', function(){
+		localStorage.searchResultsSortByTime = searchSortByTime.checked ? '1' : '';
 	});
 	
 	var zoom = $('zoom-input');
