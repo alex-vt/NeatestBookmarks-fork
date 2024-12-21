@@ -9,7 +9,7 @@ Modifications of the Neater Bookmarks Chrome extension:
 * "Open in Background Tab" bookmark context menu option added.
 * Duplication of new or background tabs fixed. A middle click opens the bookmark in a background tab. See https://github.com/evanshultz/neater-bookmarks/issues/81
 
-![example](assets/example.png)
+<img src="assets/example.png" width="400px">
 
 
 Installation:
