@@ -1,3 +1,26 @@
+# NeatestBookmarks - fork
+
+
+Modifications of the Neater Bookmarks Chrome extension:
+
+* Settings option added to sort search results by modification time (newest first).
+* Google Material style icon set for the extension and for a bookmark folder.
+* "Open in New Window" bookmark context menu option removed.
+* "Open in Background Tab" bookmark context menu option added.
+* Duplication of new or background tabs fixed. A middle click opens the bookmark in a background tab. See https://github.com/evanshultz/neater-bookmarks/issues/81
+
+![example](assets/example.png)
+
+
+Installation:
+
+1. Clone (or download and unpack) the repo.
+2. Open chrome://extensions in Chrome. Make sure the Developer mode is enabled.
+3. Drag the extension's folder onto Chrome.
+
+The original documentation is preserved below. Links are not modified.
+
+
 # Neater Bookmarks
 
 A neat bookmarks tree popup extension for Google Chrome. Licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
