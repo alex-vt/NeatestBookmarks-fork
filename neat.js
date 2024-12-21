@@ -52,7 +52,7 @@ function init() {
 	$('edit-dialog-url').placeholder = _m('url');
 	$each({
 		'bookmark-new-tab': 'openNewTab',
-		'bookmark-new-window': 'openNewWindow',
+		'bookmark-background-tab': 'openBackgroundTab',
 		'bookmark-new-incognito-window': 'openIncognitoWindow',
 		'bookmark-edit': 'edit',
 		'bookmark-delete': 'delete',
@@ -250,15 +250,6 @@ function init() {
 		}, opens);
 		localStorage.opens = JSON.stringify(opens);
 	});
-	// Force middle clicks to trigger the focus event
-	$tree.addEventListener('mouseup', function(e){
-		if (e.button != 1) return;
-		var el = e.target;
-		var tagName = el.tagName;
-		if (tagName != 'A' && tagName != 'SPAN') return;
-		el.focus();
-	});
-	
 	// Search
 	var $results = $('results');
 	var searchMode = false;
@@ -284,19 +275,19 @@ function init() {
 			if (results.length > 1){
 				results.sort(function(a, b){
 					if (!localStorage.searchResultsSortByTime) {
-					var aTitle = a.title;
-					var bTitle = b.title;
-					var aIndexTitle = aTitle.toLowerCase().indexOf(v);
-					var bIndexTitle = bTitle.toLowerCase().indexOf(v);
-					if (aIndexTitle >= 0 || bIndexTitle >= 0){
-						if (aIndexTitle < 0) aIndexTitle = Infinity;
-						if (bIndexTitle < 0) bIndexTitle = Infinity;
-						return aIndexTitle - bIndexTitle;
-					}
-					var aTestTitle = vPattern.test(aTitle);
-					var bTestTitle = vPattern.test(bTitle);
-					if (aTestTitle && !bTestTitle) return -1;
-					if (!aTestTitle && bTestTitle) return 1;
+						var aTitle = a.title;
+						var bTitle = b.title;
+						var aIndexTitle = aTitle.toLowerCase().indexOf(v);
+						var bIndexTitle = bTitle.toLowerCase().indexOf(v);
+						if (aIndexTitle >= 0 || bIndexTitle >= 0){
+							if (aIndexTitle < 0) aIndexTitle = Infinity;
+							if (bIndexTitle < 0) bIndexTitle = Infinity;
+							return aIndexTitle - bIndexTitle;
+						}
+						var aTestTitle = vPattern.test(aTitle);
+						var bTestTitle = vPattern.test(bTitle);
+						if (aTestTitle && !bTestTitle) return -1;
+						if (!aTestTitle && bTestTitle) return 1;
 					}
 					return b.dateAdded - a.dateAdded;
 				});
@@ -504,8 +495,9 @@ function init() {
 			var open = function(){
 				chrome.tabs.create({
 					url: url,
-					selected: selected
+					active: selected
 				});
+				if (!bookmarkClickStayOpen && selected) setTimeout(window.close, 200);
 			};
 			if (blankTabCheck){
 				chrome.tabs.getSelected(null, function(tab){
@@ -535,12 +527,12 @@ function init() {
 			var open = function(){
 				chrome.tabs.create({
 					url: urls.shift(),
-					selected: selected // first tab will be selected
+					active: selected // first tab will be selected
 				});
 				for (var i = 0, l = urls.length; i < l; i++){
 					chrome.tabs.create({
 						url: urls[i],
-						selected: false
+						active: false
 					});
 				}
 			};
@@ -717,19 +709,28 @@ function init() {
 	};
 	$tree.addEventListener('click', bookmarkHandler);
 	$results.addEventListener('click', bookmarkHandler);
-	var bookmarkHandlerMiddle = function(e){
-		if (e.button != 1) return; // force middle-click
-		var event = document.createEvent('MouseEvents');
-		event.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, true, false, e.shiftKey, true, 0, null);
-		e.target.dispatchEvent(event);
+	// Handle middle-click on bookmarks
+	var handleMiddleClick = function(e) {
+		if (e.button != 1) return;
+		e.preventDefault();
+		e.stopPropagation();
+		
+		var el = e.target;
+		if (el.tagName == 'A') {
+			actions.openBookmarkNewTab(el.href, false, false);
+		}
 	};
-	$tree.addEventListener('mouseup', bookmarkHandlerMiddle);
-	$results.addEventListener('mouseup', bookmarkHandlerMiddle);
+
+	$tree.addEventListener('mouseup', handleMiddleClick);
+	$results.addEventListener('mouseup', handleMiddleClick);
 	
-	// Disable Chrome auto-scroll feature
-	window.addEventListener('mousedown', function(e){
-		if (e.button == 1) e.preventDefault();
-	});
+	// Prevent default middle-click behavior globally
+	window.addEventListener('auxclick', function(e){
+		if (e.button == 1) {
+			e.preventDefault();
+			e.stopPropagation();
+		}
+	}, true);
 	
 	// Context menu
 	var $bookmarkContextMenu = $('bookmark-context-menu');
@@ -825,10 +826,10 @@ function init() {
 		var url = currentContext.href;
 		switch (el.id){
 			case 'bookmark-new-tab':
-				actions.openBookmarkNewTab(url);
+				actions.openBookmarkNewTab(url, true, true);
 				break;
-			case 'bookmark-new-window':
-				actions.openBookmarkNewWindow(url);
+			case 'bookmark-background-tab':
+				actions.openBookmarkNewTab(url, false, false);
 				break;
 			case 'bookmark-new-incognito-window':
 				actions.openBookmarkNewWindow(url, true);

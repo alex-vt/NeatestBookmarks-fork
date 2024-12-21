@@ -144,6 +144,9 @@
   "openNewTab": {
     "message": "Open in New Tab"
   },
+  "openBackgroundTab": {
+    "message": "Open in Background Tab"
+  },
   "openNewWindow": {
     "message": "Open in New Window"
   },
