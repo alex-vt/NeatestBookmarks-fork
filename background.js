@@ -1,21 +1,16 @@
 var reportError = function(msg, url, line){
 	var txt = '_s=3f41da182f664057b74bd124b53958a0&_r=img'
-		+ '&Msg=' + escape(msg)
-		+ '&URL=' + escape(url)
+		+ '&Msg=' + encodeURIComponent(msg)
+		+ '&URL=' + encodeURIComponent(url)
 		+ '&Line=' + line
-		+ '&Platform=' + escape(navigator.platform)
-		+ '&UserAgent=' + escape(navigator.userAgent);
-	var i = document.createElement('img');
-	i.setAttribute('src', (('https:' == document.location.protocol) ? 'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/submit?' + txt);
-	document.body.appendChild(i);
-	i.onload = function(){
-		document.body.removeChild(i);
-	};
+		+ '&Platform=' + encodeURIComponent(navigator.platform)
+		+ '&UserAgent=' + encodeURIComponent(navigator.userAgent);
+	fetch('https://errorstack.appspot.com/submit?' + txt).catch(() => {});
 };
 
 window.onerror = reportError;
 
-chrome.extension.onRequest.addListener(function(request){
+chrome.runtime.onMessage.addListener(function(request){
 	if (request.error) reportError.apply(null, request.error);
 });
 
@@ -118,8 +113,8 @@ if (chrome.omnibox){
 		disposition = disposition || 'currentTab';
 		var url = (text == omniboxValue) ? firstResult.url : text;
 		if (disposition === 'currentTab') {
-			chrome.tabs.getSelected(null, function(tab){
-				chrome.tabs.update(tab.id, {
+			chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+				chrome.tabs.update(tabs[0].id, {
 					url: url,
 					active: true
 				});
@@ -140,5 +135,5 @@ if (localStorage.customIcon){
 	var customIcon = JSON.parse(localStorage.customIcon);
 	var imageData = ctx.getImageData(0, 0, 19, 19);
 	for (var key in customIcon) imageData.data[key] = customIcon[key];
-	chrome.browserAction.setIcon({imageData: imageData});
+	chrome.action.setIcon({imageData: imageData});
 }

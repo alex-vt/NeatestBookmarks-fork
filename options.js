@@ -176,5 +176,5 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 onerror = function(){
-	chrome.extension.sendRequest({error: [].slice.call(arguments)})
+	chrome.runtime.sendMessage({error: [].slice.call(arguments)})
 };

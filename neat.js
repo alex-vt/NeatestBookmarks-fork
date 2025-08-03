@@ -12,7 +12,7 @@ function init() {
 	var navigator = window.navigator;
 	var body = document.body;
 	var _m = chrome.i18n.getMessage;
-	var _b = chrome.extension.getBackgroundPage().console;
+	var _b = chrome.runtime.getBackgroundPage().console;
 	
 	// Error alert
 	var AlertDialog = {
@@ -102,7 +102,7 @@ function init() {
 	var generateBookmarkHTML = function(title, url, extras){
 		if (!extras) extras = '';
 		var u = url.htmlspecialchars();
-		var favicon = 'chrome://favicon/' + u;
+		var favicon = `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(url)}&size=16`;
 		var tooltipURL = url;
 		if (/^javascript:/i.test(url)){
 			if (url.length > 140) tooltipURL = url.slice(0, 140) + '...';
@@ -478,7 +478,8 @@ function init() {
 	var openBookmarksLimit = 10;
 	var actions = {
 		openBookmark: function(url){
-			chrome.tabs.getSelected(null, function(tab){
+			chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+				var tab = tabs[0];
 				try {
                     decodedURL = decodeURIComponent(url);
                 } catch (e) {
@@ -500,7 +501,8 @@ function init() {
 				if (!bookmarkClickStayOpen && selected) setTimeout(window.close, 200);
 			};
 			if (blankTabCheck){
-				chrome.tabs.getSelected(null, function(tab){
+				chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+					var tab = tabs[0];
 					if (/^chrome:\/\/newtab/i.test(tab.url)){
 						chrome.tabs.update(tab.id, {
 							url: url
@@ -1516,5 +1518,5 @@ function init() {
 })(window);
 
 onerror = function(){
-	chrome.extension.sendRequest({error: [].slice.call(arguments)})
+	chrome.runtime.sendMessage({error: [].slice.call(arguments)})
 };
