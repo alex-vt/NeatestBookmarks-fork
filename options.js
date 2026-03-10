@@ -3,7 +3,7 @@ window.addEventListener('load', init, false);
 function init() {
 	// i18n of text strings
 	$('extName').innerHTML = chrome.i18n.getMessage('extName');
-	$('version').innerHTML = chrome.app.getDetails().version // undocumented method!
+	$('version').textContent = chrome.runtime.getManifest().version;
 	$('options').innerHTML = chrome.i18n.getMessage('options');
 	$('general').innerHTML = chrome.i18n.getMessage('general');
 	$('optionClickNewTab').innerHTML = chrome.i18n.getMessage('optionClickNewTab');
@@ -19,7 +19,6 @@ function init() {
 	$('customIconText').innerHTML = chrome.i18n.getMessage('customIconText');
 	$('resetSettings').innerHTML = chrome.i18n.getMessage('resetSettings');
 	var extName = chrome.i18n.getMessage('extName');
-	var version = chrome.i18n.getMessage('version');
 	$('resetText').innerHTML = chrome.i18n.getMessage('resetText', [extName]);
 	$('reset').innerHTML = chrome.i18n.getMessage('reset');
 	$('customStyles').innerHTML = chrome.i18n.getMessage('customStyles');
